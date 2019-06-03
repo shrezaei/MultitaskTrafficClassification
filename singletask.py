@@ -34,6 +34,12 @@ trainData = trainData[:, -timestep*2:]
 trainlabel = trainlabel[:, -timestep*2:]
 trainlabel = trainlabel.astype(int)
 
+valData = np.load("valData.npy")
+valLabel = np.load("valLabel.npy")
+valData = valData[:, -timestep*2:]
+valLabel = valLabel[:, -timestep*2:]
+valLabel = valLabel.astype(int)
+
 testData = np.load("testData.npy")
 testLabel = np.load("testLabel.npy")
 testData = testData[:, -timestep*2:]
@@ -63,6 +69,30 @@ for i in range(trainlabel.shape[0]):
     else:
         trainlabel[i, 1] = 4
 
+
+for i in range(valLabel.shape[0]):
+    #Categorizing Bandwidth
+    if valLabel[i, 0] < 10000:
+        valLabel[i, 0] = 1
+    elif valLabel[i, 0] < 50000:
+        valLabel[i, 0] = 2
+    elif valLabel[i, 0] < 100000:
+        valLabel[i, 0] = 3
+    elif valLabel[i, 0] < 1000000:
+        valLabel[i, 0] = 4
+    else:
+        valLabel[i, 0] = 5
+    #Categorizing Duration
+    if valLabel[i, 1] < 10:
+        valLabel[i, 1] = 1
+    elif valLabel[i, 1] < 30:
+        valLabel[i, 1] = 2
+    elif valLabel[i, 1] < 60:
+        valLabel[i, 1] = 3
+    else:
+        valLabel[i, 1] = 4
+
+
 for i in range(testLabel.shape[0]):
     #Categorizing Bandwidth
     if testLabel[i, 0] < 10000:
@@ -88,18 +118,24 @@ for i in range(testLabel.shape[0]):
 
 trainlabel = trainlabel[:, PredictionType]
 testLabel = testLabel[:, PredictionType]
-
+valLabel = valLabel[:, PredictionType]
 
 train_size = trainlabel.shape[0]
 Y_train = np.zeros((train_size, num_class))
 Y_train[np.arange(train_size),trainlabel[:]-1] = 1
+
+val_size = valLabel.shape[0]
+Y_val = np.zeros((val_size, num_class))
+Y_val[np.arange(val_size),valLabel[:]-1] = 1
 
 test_size = testLabel.shape[0]
 Y_test = np.zeros((test_size, num_class))
 Y_test[np.arange(test_size),testLabel[:]-1] = 1
 
 trainData = trainData.reshape((trainData.shape[0], timestep, 2))
+valData = valData.reshape((valData.shape[0], timestep, 2))
 testData = testData.reshape((testData.shape[0], timestep, 2))
+
 
 if not TrainWithAllData:
     class_counter = np.zeros((num_class))
@@ -149,5 +185,8 @@ def base_model():
 
 model = base_model()
 
-model.fit(trainData, Y_train, validation_data = (testData, Y_test),
+model.fit(trainData, Y_train, validation_data = (valData, Y_val),
           batch_size = 64, epochs = 30, verbose = True, shuffle = True)
+
+result = model.evaluate([testData], [Y_test])
+print(result)
