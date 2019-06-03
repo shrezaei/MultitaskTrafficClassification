@@ -190,7 +190,7 @@ def loadData(dirPath, class_label,  extractedFlows = 0):
 
 if __name__ == "__main__":
 
-    BaseDirectory = "Data"
+    BaseDirectory = "Data/pretraining"
     (data1, label1) = loadData(BaseDirectory + "/Google Drive", 1, extractedFlows=1)
     (data2, label2) = loadData(BaseDirectory + "/Youtube", 2,  extractedFlows=1)
     (data3, label3) = loadData(BaseDirectory + "/Google Doc", 3,  extractedFlows=1)
@@ -198,22 +198,33 @@ if __name__ == "__main__":
     (data5, label5) = loadData(BaseDirectory + "/Google Music", 5, extractedFlows=1)
 
     test_size = 30
-    train1 = data1[:-test_size]
-    train2 = data2[:-test_size]
-    train3 = data3[:-test_size]
-    train4 = data4[:-test_size]
-    train5 = data5[:-test_size]
+    val_size = 30
+    train1 = data1[:-(test_size+val_size)]
+    train2 = data2[:-(test_size+val_size)]
+    train3 = data3[:-(test_size+val_size)]
+    train4 = data4[:-(test_size+val_size)]
+    train5 = data5[:-(test_size+val_size)]
+    val1 = data1[-(test_size+val_size):-test_size]
+    val2 = data2[-(test_size+val_size):-test_size]
+    val3 = data3[-(test_size+val_size):-test_size]
+    val4 = data4[-(test_size+val_size):-test_size]
+    val5 = data5[-(test_size+val_size):-test_size]
     test1 = data1[-test_size:]
     test2 = data2[-test_size:]
     test3 = data3[-test_size:]
     test4 = data4[-test_size:]
     test5 = data5[-test_size:]
 
-    trainL1 = label1[:-test_size]
-    trainL2 = label2[:-test_size]
-    trainL3 = label3[:-test_size]
-    trainL4 = label4[:-test_size]
-    trainL5 = label5[:-test_size]
+    trainL1 = label1[:-(test_size+val_size)]
+    trainL2 = label2[:-(test_size+val_size)]
+    trainL3 = label3[:-(test_size+val_size)]
+    trainL4 = label4[:-(test_size+val_size)]
+    trainL5 = label5[:-(test_size+val_size)]
+    valL1 = label1[-(test_size+val_size):-test_size]
+    valL2 = label2[-(test_size+val_size):-test_size]
+    valL3 = label3[-(test_size+val_size):-test_size]
+    valL4 = label4[-(test_size+val_size):-test_size]
+    valL5 = label5[-(test_size+val_size):-test_size]
     testL1 = label1[-test_size:]
     testL2 = label2[-test_size:]
     testL3 = label3[-test_size:]
@@ -221,14 +232,22 @@ if __name__ == "__main__":
     testL5 = label5[-test_size:]
 
     train_data = np.concatenate((train1, train2, train3, train4, train5), axis=0)
+    val_data = np.concatenate((val1, val2, val3, val4, val5), axis=0)
     test_data = np.concatenate((test1, test2, test3, test4, test5), axis=0)
+
     train_label = np.concatenate((trainL1, trainL2, trainL3, trainL4, trainL5), axis=0)
+    val_label = np.concatenate((valL1, valL2, valL3, valL4, valL5), axis=0)
     test_label = np.concatenate((testL1, testL2, testL3, testL4, testL5), axis=0)
 
     np.save("trainData.npy", train_data)
     np.save("trainLabel.npy", train_label)
 
+    np.save("valData.npy", val_data)
+    np.save("valLabel.npy", val_label)
+
     np.save("testData.npy", test_data)
     np.save("testLabel.npy", test_label)
 
     print(train_data.shape, train_label.shape)
+    print(val_data.shape, val_label.shape)
+    print(test_data.shape, test_label.shape)
