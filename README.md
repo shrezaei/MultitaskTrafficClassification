@@ -1,4 +1,6 @@
 # MultitaskTrafficClassification
+Implementation of "[Multitask Learning for Network Traffic Classification](https://arxiv.org/abs/1906.05248)". For more information read the paper.
+
 Multitask Learning Approach for Network Traffic Classification
 
 1. Copy the entire QUIC dataset (https://drive.google.com/drive/folders/1Pvev0hJ82usPh6dWDlz7Lv8L6h3JpWhE) into the a folder, named Data.
